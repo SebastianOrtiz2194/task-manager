@@ -3,18 +3,18 @@ package com.example.taskmanager.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.io.Serializable;
 
 /**
  * Represents a Task entity.
- * The @Document annotation marks this class as a MongoDB document.
- * The 'tasks' value is the name of the collection in MongoDB.
- * The @Data annotation from Lombok automatically generates getters, setters,
- * toString(), equals(), and hashCode() methods.
- * The @Id annotation marks the 'id' field as the primary key.
+ * Implements Serializable to allow the object to be sent over Kafka and stored in Redis.
  */
 @Document(collection = "tasks")
 @Data
-public class Task {
+public class Task implements Serializable {
+
+    // A version UID for serialization
+    private static final long serialVersionUID = 1L;
 
     @Id
     private String id;
@@ -22,3 +22,4 @@ public class Task {
     private String description;
     private boolean completed;
 }
+
