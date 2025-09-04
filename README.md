@@ -58,3 +58,23 @@ This service follows a decoupled, event-driven architecture designed for perform
         mvn spring-boot:run
     The application will start on http://localhost:8080.
 
+## API Endpoints
+The base URL for the API is /api/tasks.
+
+| Method   | Endpoint          | Description                 | Request Body Example                                       |
+| :------- | :---------------- | :-------------------------- | :--------------------------------------------------------- |
+| `GET`    | `/`               | Retrieve all tasks.         | N/A                                                        |
+| `GET`    | `/{id}`           | Retrieve a single task by ID. | N/A                                                        |
+| `POST`   | `/`               | Create a new task.          | `{"title": "New Task", "description": "Details", "completed": false}` |
+| `PUT`    | `/{id}`           | Update an existing task.    | `{"title": "Updated Title", "description": "...", "completed": true}` |
+| `DELETE` | `/{id}`           | Delete a task.              | N/A                                                        |
+
+## Configuration
+Key configuration properties are located in `src/main/resources/application.properties`.
+
+- `server.port`: The port on which the application runs.
+- `spring.data.mongodb.uri`: Connection string for the MongoDB database.
+- `spring.data.redis.host` / `port`: Connection details for the Redis cache.
+- `spring.kafka.bootstrap-servers`: Connection details for the Kafka broker.
+
+These are pre-configured to work with the provided Docker Compose setup.
