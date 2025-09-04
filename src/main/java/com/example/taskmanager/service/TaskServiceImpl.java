@@ -1,6 +1,8 @@
 package com.example.taskmanager.service;
 
+import com.example.taskmanager.dto.TaskRequestDTO;
 import com.example.taskmanager.event.TaskEvent;
+import com.example.taskmanager.exception.ResourceNotFoundException;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +12,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Service implementation containing the business logic for managing tasks.
- * This class integrates the database repository, caching, and Kafka producer.
+ * Service implementation now throws a ResourceNotFoundException when a task
+ * is not found, ensuring the global handler can catch it.
  */
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -32,46 +33,45 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Cacheable(value = "tasks", key = "#id")
-    public Optional<Task> getTaskById(String id) {
-        // This method will first check the 'tasks' cache.
-        // If an entry with key 'id' is found, it's returned.
-        // Otherwise, this method is executed, and its result is cached.
-        return taskRepository.findById(id);
+    public Task getTaskById(String id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
     }
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(TaskRequestDTO taskRequestDTO) {
+        Task task = new Task();
+        task.setTitle(taskRequestDTO.getTitle());
+        task.setDescription(taskRequestDTO.getDescription());
+        task.setCompleted(taskRequestDTO.getCompleted());
+
         Task savedTask = taskRepository.save(task);
-        // Publish an event to Kafka
         kafkaProducerService.sendMessage(new TaskEvent(TaskEvent.EventType.CREATED, savedTask));
         return savedTask;
     }
 
     @Override
     @CachePut(value = "tasks", key = "#id")
-    public Optional<Task> updateTask(String id, Task taskDetails) {
-        // @CachePut always executes the method and updates the cache with the result.
-        // This keeps the cache entry fresh after an update.
-        return taskRepository.findById(id).map(task -> {
-            task.setTitle(taskDetails.getTitle());
-            task.setDescription(taskDetails.getDescription());
-            task.setCompleted(taskDetails.isCompleted());
-            Task updatedTask = taskRepository.save(task);
-            // Publish an event to Kafka
-            kafkaProducerService.sendMessage(new TaskEvent(TaskEvent.EventType.UPDATED, updatedTask));
-            return updatedTask;
-        });
+    public Task updateTask(String id, TaskRequestDTO taskRequestDTO) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
+
+        task.setTitle(taskRequestDTO.getTitle());
+        task.setDescription(taskRequestDTO.getDescription());
+        task.setCompleted(taskRequestDTO.getCompleted());
+
+        Task updatedTask = taskRepository.save(task);
+        kafkaProducerService.sendMessage(new TaskEvent(TaskEvent.EventType.UPDATED, updatedTask));
+        return updatedTask;
     }
 
     @Override
     @CacheEvict(value = "tasks", key = "#id")
-    public boolean deleteTask(String id) {
-        // @CacheEvict removes the entry from the cache.
-        return taskRepository.findById(id).map(task -> {
-            taskRepository.delete(task);
-            // Publish an event to Kafka
-            kafkaProducerService.sendMessage(new TaskEvent(TaskEvent.EventType.DELETED, task));
-            return true;
-        }).orElse(false);
+    public void deleteTask(String id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
+
+        taskRepository.delete(task);
+        kafkaProducerService.sendMessage(new TaskEvent(TaskEvent.EventType.DELETED, task));
     }
 }
