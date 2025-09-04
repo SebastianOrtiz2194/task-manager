@@ -21,11 +21,11 @@ This service follows a decoupled, event-driven architecture designed for perform
 ## Features
 **CRUD Operations:** Full Create, Read, Update, and Delete functionality for tasks.
 
+**Robust Error Handling:** Global exception handling for consistent and clean error responses.
+
+**Input Validation:** Automatic server-side validation of request data.
+
 **High-Performance Caching:** Integrated with Redis to cache responses and improve speed.
-
-**Event-Driven:** Publishes messages to Kafka on data changes.
-
-**Decoupled Logic:** Clear separation of concerns between controllers, services, and repositories.
 
 **Containerized Infrastructure:** Comes with a docker-compose.yml for easy setup of Kafka, Zookeeper, and Redis.
 
