@@ -77,4 +77,72 @@ Key configuration properties are located in `src/main/resources/application.prop
 - `spring.data.redis.host` / `port`: Connection details for the Redis cache.
 - `spring.kafka.bootstrap-servers`: Connection details for the Kafka broker.
 
-These are pre-configured to work with the provided Docker Compose setup.
+
+## Installation & Setup
+      Create a .env file:
+In the root of the project, create a file named .env and add your JWT secret. This file should not be committed to Git.
+
+      JWT_SECRET=MySuperSecretKeyThatIsVeryLongAndSecureAndRandom
+
+### Clone the repository:
+
+      git clone <your-repository-url>
+      cd task-manager
+
+### Build and run the entire stack with Docker Compose:
+This single command will build the Docker image for your application and start all the necessary infrastructure containers (MongoDB, Redis, Kafka).
+
+      docker-compose up --build -d
+
+The application will be available at http://localhost:8080.
+
+
+### To stop the services:
+
+      docker-compose down
+
+
+## Security
+This application is secured using Spring Security and JSON Web Tokens (JWT). All endpoints under `/api/tasks` are protected and require a valid JWT Bearer Token in the `Authorization` header.
+
+### Authentication Flow
+#### 1. Register a new user: 
+Send a `POST` request to `/api/auth/register` with a username and password.
+
+      {
+      "username": "user",
+      "password": "password123"
+      }
+
+#### 2. Log in to get a token:
+Send a POST request to `/api/auth/login` with your credentials. The server will respond with a JWT.
+
+      {
+      "username": "user",
+      "password": "password123"
+      }
+
+#### 3. Access protected endpoints:
+Include the received token in the Authorization header for all subsequent requests to `/api/tasks`.
+
+      Authorization: Bearer <your-jwt-token-here>
+
+## Running Tests
+You can run all the unit and integration tests using the following Maven command:
+
+      mvn test
+
+## API Endpoints
+The base URL for the API is `/api/tasks`.
+
+### Public Endpoints
+| Method | Endpoint            | Description |
+|:-------|:--------------------| :---------- |
+| `POST` | `/api/auth/register`  | Register a new user. |
+| `POST`   | `/api/auth/login`  |  Log in and receive a JWT. |
+
+### Protected Endpoints (Require Authentication)
+| Method | Endpoint            | Description                 |
+| :----- |:--------------------|:----------------------------|
+| `GET` | `/api/tasks`  | Retrieve all tasks.         |
+| `GET` | `/api/tasks/{id}`  | Retrieve a single task by ID. |
