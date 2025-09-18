@@ -12,6 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TaskRepository extends MongoRepository<Task, String> {
-    // You can define custom query methods here if needed.
-    // For example: findByCompleted(boolean completed);
+
 }
