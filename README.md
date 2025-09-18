@@ -1,5 +1,5 @@
 # Task Manager API Microservice
-A resilient and scalable RESTful microservice for managing tasks, built with Java 21 and Spring Boot. This project demonstrates a modern microservice architecture using MongoDB as a primary database, Redis for high-performance caching, and Apache Kafka for asynchronous, event-driven communication.
+A resilient and scalable RESTful microservice for managing tasks, built with Java 21 and Spring Boot. This project demonstrates a modern microservice architecture using MongoDB as a primary database, Redis for high-performance caching, Apache Kafka for asynchronous, event-driven communication, and JWT auth for security.
 
 ---
 
@@ -40,34 +40,6 @@ This service follows a decoupled, event-driven architecture designed for perform
 - Docker and Docker Compose
 
 ---
-
-## Installation & Setup
-1. ### Clone the repository:
-
-        git clone <your-repository-url>
-        cd task-manager
-
-2. ### Start the infrastructure (Kafka, Zookeeper, Redis):
-    Open a terminal in the project root and run:
-
-        docker-compose up -d
-
-    This will start all required services in the background.
-
-3. ### Build and run the Spring Boot application:
-        mvn spring-boot:run
-    The application will start on http://localhost:8080.
-
-## API Endpoints
-The base URL for the API is /api/tasks.
-
-| Method   | Endpoint          | Description                 | Request Body Example                                       |
-| :------- | :---------------- | :-------------------------- | :--------------------------------------------------------- |
-| `GET`    | `/`               | Retrieve all tasks.         | N/A                                                        |
-| `GET`    | `/{id}`           | Retrieve a single task by ID. | N/A                                                        |
-| `POST`   | `/`               | Create a new task.          | `{"title": "New Task", "description": "Details", "completed": false}` |
-| `PUT`    | `/{id}`           | Update an existing task.    | `{"title": "Updated Title", "description": "...", "completed": true}` |
-| `DELETE` | `/{id}`           | Delete a task.              | N/A                                                        |
 
 ## Configuration
 Key configuration properties are located in `src/main/resources/application.properties`.
@@ -146,3 +118,24 @@ The base URL for the API is `/api/tasks`.
 | :----- |:--------------------|:----------------------------|
 | `GET` | `/api/tasks`  | Retrieve all tasks.         |
 | `GET` | `/api/tasks/{id}`  | Retrieve a single task by ID. |
+| `POST`   | `/`               | Create a new task.          | 
+| `PUT`    | `/{id}`           | Update an existing task.    | 
+| `DELETE` | `/{id}`           | Delete a task.            |
+
+
+## API Documentation
+This project includes interactive API documentation powered by OpenAPI 3 and Swagger UI.
+
+Once the application is running, you can access the documentation in your browser at:
+
+http://localhost:8080/swagger-ui.html
+
+### From the Swagger UI, you can:
+
+- View all available endpoints.
+
+- See detailed information about request parameters, bodies, and responses.
+
+- Authorize your session by clicking the "Authorize" button and entering your JWT token in the format Bearer <your-token>.
+
+- Execute API requests directly from the documentation to test the endpoints.
