@@ -138,4 +138,4 @@ http://localhost:8080/swagger-ui.html
 
 - Authorize your session by clicking the "Authorize" button and entering your JWT token in the format Bearer <your-token>.
 
-- Execute API requests directly from the documentation to test the endpoints.
+- Execute API requests directly from the documentation to test the real endpoints.
